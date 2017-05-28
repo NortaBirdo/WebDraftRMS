@@ -16,17 +16,12 @@ app.set('view engine', 'ejs');
 //http://www.tutorialsteacher.com/nodejs/access-sql-server-in-nodejs
 
 app.get('/', function(req,res) {
-  sql.connect(config, function(err){
-    /*if (err) console.log(err);*/
-
-    var request = new sql.Request();
+  const pool1 = new sql.ConnectionPool(config, err=> {
+    var request = new sql.Request(pool1);
     request.query('select * from backlog', function (err, recordset){
-    /*  if (err) console.log(err);*/
-
       res.render(path.join(__dirname+'/view/index.ejs'), {backlog: recordset});
     });
   });
-  /*await sql.close();*/
 });
 
 
