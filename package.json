@@ -1,0 +1,25 @@
+{
+  "name": "webdraftrms",
+  "version": "1.0.0",
+  "description": "web view for DraftRMS project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NortaBirdo/WebDraftRMS.git"
+  },
+  "author": "Nikolay Sokolovskiy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NortaBirdo/WebDraftRMS/issues"
+  },
+  "homepage": "https://github.com/NortaBirdo/WebDraftRMS#readme",
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "mssql": "^4.0.4",
+    "path": "^0.12.7"
+  }
+}

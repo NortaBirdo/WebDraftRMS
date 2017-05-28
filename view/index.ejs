@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>DraftRMS</title>
+  </head>
+  <body>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Group</th>
+            <th>Requirement</th>
+            <th>Priority</th>
+            <th>BE</th>
+            <th>FE</th>
+            <th>Status</th>
+            <th>Authors</th>
+            <th>CR Link</th>
+            <th>Elicitation Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var i=0; i<backlog.recordset.length; i++) {%>
+            <tr>
+              <td><%= backlog.recordset[i].Id  %></td>
+              <td><%= backlog.recordset[i].Authors  %></td>
+              <td><%= backlog.recordset[i].Group  %></td>
+              <td><%= backlog.recordset[i].Type  %></td>
+              <td><%= backlog.recordset[i].RawText  %></td>
+              <td><%= backlog.recordset[i].Priority  %></td>
+              <td><%= backlog.recordset[i].Status  %></td>
+              <td><%= backlog.recordset[i].ElicitationDate  %></td>
+              <td><%= backlog.recordset[i].ChangeRequestLink  %></td>
+              <td><%= backlog.recordset[i].Source  %></td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+  </body>
+</html>
