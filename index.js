@@ -14,6 +14,7 @@ var config = {
 app.set('view engine', 'ejs');
 
 //http://www.tutorialsteacher.com/nodejs/access-sql-server-in-nodejs
+//https://github.com/patriksimek/node-mssql#connection-pools
 
 app.get('/', function(req,res) {
   const pool1 = new sql.ConnectionPool(config, err=> {
