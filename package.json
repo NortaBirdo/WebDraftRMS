@@ -22,7 +22,5 @@
     "mssql": "^4.0.4",
     "path": "^0.12.7"
   },
-  "devDependencies": {
-    "nodemon": "^1.11.0"
-  }
+  "devDependencies": {}
 }

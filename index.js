@@ -5,9 +5,11 @@ var config = require('./setting.js'); //you have to create file which exports js
 var sql = require('mssql');
 
 app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname+'/view')));
 
 //http://www.tutorialsteacher.com/nodejs/access-sql-server-in-nodejs
 //https://github.com/patriksimek/node-mssql#connection-pools
+//https://stackoverflow.com/questions/24582338/how-can-i-include-css-files-using-node-express-and-ejs
 
 app.get('/', function(req,res) {
   const pool1 = new sql.ConnectionPool(config, err => {

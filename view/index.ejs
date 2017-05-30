@@ -2,41 +2,69 @@
 <html>
   <head>
       <title>DraftRMS</title>
+      <link rel="stylesheet" href="css/materialize.css">
+      <link rel="stylesheet" href="css/index.css">
   </head>
   <body>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Group</th>
-            <th>Type</th>
-            <th>Requirement</th>
-            <th>Priority</th>
-            <th>BE</th>
-            <th>FE</th>
-            <th>Status</th>
-            <th>Authors</th>
-            <th>CR Link</th>
-            <th>Sorce</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for(var i=0; i<backlog.recordset.length; i++) {%>
+    <script type="text/javascript">
+      function showPopup(id) {
+        alert(id);
+        //document.getElementsByClassName('requirement-card ')[0].style= "display: block";
+      }
+    </script>
+    <div class="nav-wrapper">
+      <span class="my-logo">DraftRMS</span>
+      <ul class="right hide-on-med-and-down">
+        <a class="waves-effect waves-light btn">Create New</a>
+        <a class="waves-effect waves-light btn">Log In</a>
+        <a class="waves-effect waves-light btn">Log Out</a>
+      </ul>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <table class="bordered highlight responsive-table backlog">
+          <thead>
             <tr>
-              <td><%= backlog.recordset[i].Id  %></td>
-              <td><%= backlog.recordset[i].Group  %></td>
-              <td><%= backlog.recordset[i].Type  %></td>
-              <td><%= backlog.recordset[i].RawDataPlant  %></td>
-              <td><%= backlog.recordset[i].Priority  %></td>
-              <td><%= backlog.recordset[i].BE_Estimate %></td>
-              <td><%= backlog.recordset[i].FE_Estimate %></td>
-              <td><%= backlog.recordset[i].Status  %></td>
-              <td><%= backlog.recordset[i].Authors  %></td>
-              <td><a href="<%= backlog.recordset[i].ChangeRequestLink  %>"><%= backlog.recordset[i].ChangeRequestLink  %></a> </td>
-              <td><%= backlog.recordset[i].Source  %></td>
-          </tr>
-          <% } %>
-        </tbody>
-      </table>
+              <th class="backlog_amount center-align">ID</th>
+              <th class="backlog_10 center-align">Group</th>
+              <th class="backlog_10 center-align">Type</th>
+              <th>Requirement</th>
+              <th class="backlog_amount center-align">Priority</th>
+              <th class="backlog_amount center-align">BE</th>
+              <th class="backlog_amount center-align">FE</th>
+              <th class="backlog_status center-align">Status</th>
+              <th class="backlog_10 center-align">Authors</th>
+              <th class="backlog_10 center-align">CR Link</th>
+              <th class="backlog_10 center-align">Sorce</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for(var i=0; i<backlog.recordset.length; i++) {%>
+              <tr onclick="showPopup('<%= backlog.recordset[i].Id  %> ')">
+                <td class="center-align modal-trigger"><%= backlog.recordset[i].Id  %></td>
+                <td class="center-align"><%= backlog.recordset[i].Group  %></td>
+                <td class="center-align"><%= backlog.recordset[i].Type  %></td>
+                <td><%= backlog.recordset[i].RawDataPlant  %></td>
+                <td class="center-align"><%= backlog.recordset[i].Priority  %></td>
+                <td class="center-align"><%= backlog.recordset[i].BE_Estimate %></td>
+                <td class="center-align"><%= backlog.recordset[i].FE_Estimate %></td>
+                <td class="center-align"><%= backlog.recordset[i].Status  %></td>
+                <td><%= backlog.recordset[i].Authors  %></td>
+                <td><a href="<%= backlog.recordset[i].ChangeRequestLink  %>"><%= backlog.recordset[i].ChangeRequestLink  %></a> </td>
+                <td><%= backlog.recordset[i].Source  %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div> <!-- end of backlog-->
+
+    <!-- Modal Structure -->
+    <div class="requirement-card">
+
+    </div>
+
+
   </body>
 </html>

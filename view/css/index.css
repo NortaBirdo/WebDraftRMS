@@ -1,0 +1,30 @@
+.backlog_10 {
+  width: 10%;
+}
+
+.backlog_status {
+  width: 7%;
+}
+
+.backlog_amount {
+  width: 3%;
+}
+
+.backlog td:last-child,
+.backlog td:nth-child(10) {
+  word-break: break-all;
+}
+
+.requirement-card {
+  display: block;
+  min-width: 100px;
+  min-height: 100px;
+  position: fixed;
+  top: 100px;
+  left: 100px;
+}
+
+.my-logo {
+  font-size: 32px;
+  vertical-align: middle;
+}
