@@ -6,11 +6,43 @@
       <link rel="stylesheet" href="css/index.css">
   </head>
   <body>
+    <script src="js/jquery-3.2.1.min.js" charset="utf-8"></script>
     <script type="text/javascript">
+      function dateFormatting(date) {
+        var d = new Date(date);
+        var monthNames = ["Jan", "Feb", "March", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        return d.getDate() + '-' + monthNames[d.getMonth()] + '-' + d.getFullYear();
+      };
+
       function showPopup(id) {
-        alert(id);
-        //document.getElementsByClassName('requirement-card ')[0].style= "display: block";
-      }
+        document.getElementById('requirement-card').style.display = 'block';
+
+        document.getElementById('req_id').innerHTML = id;
+        $.post('/api/getRequirementId', {req_id: id}, function(data){
+          document.getElementById('req_text').innerHTML = data.recordset[0].RawDataPlant;
+          document.getElementById('req_group').innerHTML = data.recordset[0].Group;
+          document.getElementById('req_author').innerHTML = data.recordset[0].Authors;
+          if (data.recordset[0].ElicitationDate) {
+            document.getElementById('req_eliciataion').innerHTML = dateFormatting(data.recordset[0].ElicitationDate)
+          } else {
+            document.getElementById('req_eliciataion').innerHTML = 'N/A'
+          }
+          document.getElementById('req_prior').innerHTML = data.recordset[0].Priority;
+          document.getElementById('req_status').innerHTML = data.recordset[0].Status;
+          document.getElementById('req_BE').innerHTML = data.recordset[0].BE_Estimate;
+          document.getElementById('req_FE').innerHTML = data.recordset[0].FE_Estimate;
+          document.getElementById('req_CR').setAttribute("href", data.recordset[0].ChangeRequestLink);
+          document.getElementById('req_sorce').innerHTML = data.recordset[0].Source;
+          document.getElementById('req_notes').innerHTML = data.recordset[0].Comment;
+        });
+      };
+
+      function closePopup(){
+        document.getElementById('requirement-card').style.display = 'none';
+      };
+
     </script>
     <div class="nav-wrapper">
       <span class="my-logo">DraftRMS</span>
@@ -21,12 +53,103 @@
       </ul>
     </div>
 
+    <!-- Modal Popup -->
+    <div class="modal" id="requirement-card">
+      <div class="modal-content">
+        <h4>Requirement Id: <span id="req_id"></span></h4>
+        <div class="attribute-panel">
+          From '<span id="req_group"></span>' group, was proposed by: <span id="req_author"></span>, at <span id="req_eliciataion"></span>
+        </div>
+
+        <div class="general-wrapper">
+          <div class="content">
+            <label>Text of Requirement</label>
+            <div id="req_text">
+
+            </div>
+          </div>
+
+          <div class="sidebar">
+            <div class="row">
+              <div class="label">
+                <label>Priority</label>
+              </div>
+              <div class="value">
+                <span id="req_prior"></span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                <label>Status</label>
+              </div>
+              <div class="value">
+                <span id="req_status"></span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                <label>BE Estimate</label>
+              </div>
+              <div class="value">
+                <span id="req_BE"></span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                <label>FE Estimate</label>
+              </div>
+              <div class="value">
+                <span id="req_FE"></span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                <label>Link to CR</label>
+              </div>
+              <div class="value">
+                <a href="" id="req_CR">link to CR</a>
+                <!--<span id="req_CR"> </span>-->
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                <label>Source</label>
+              </div>
+              <div class="value">
+                <span id="req_sorce"></span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label">
+                <label>Notes</label>
+              </div>
+              <div class="value">
+                <span id="req_notes"></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <span class="modal-action modal-close waves-effect waves-green btn-flat" onclick="closePopup()">Close</span>
+      </div>
+    </div>
+
+    <!--backlog content-->
     <div class="row">
       <div class="col s12">
         <table class="bordered highlight responsive-table backlog">
           <thead>
             <tr>
-              <th class="backlog_amount center-align">ID</th>
+              <th class="backlog_amount center-align">Id</th>
               <th class="backlog_10 center-align">Group</th>
               <th class="backlog_10 center-align">Type</th>
               <th>Requirement</th>
@@ -51,7 +174,7 @@
                 <td class="center-align"><%= backlog.recordset[i].FE_Estimate %></td>
                 <td class="center-align"><%= backlog.recordset[i].Status  %></td>
                 <td><%= backlog.recordset[i].Authors  %></td>
-                <td><a href="<%= backlog.recordset[i].ChangeRequestLink  %>"><%= backlog.recordset[i].ChangeRequestLink  %></a> </td>
+                <td><a href="<%= backlog.recordset[i].ChangeRequestLink  %>" target="_blank"><%= backlog.recordset[i].ChangeRequestLink  %></a> </td>
                 <td><%= backlog.recordset[i].Source  %></td>
             </tr>
             <% } %>
@@ -59,12 +182,6 @@
         </table>
       </div>
     </div> <!-- end of backlog-->
-
-    <!-- Modal Structure -->
-    <div class="requirement-card">
-
-    </div>
-
 
   </body>
 </html>

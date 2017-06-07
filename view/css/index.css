@@ -1,3 +1,15 @@
+.my-logo {
+  font-size: 32px;
+  vertical-align: middle;
+}
+
+.nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+/*backlog styles*/
 .backlog_10 {
   width: 10%;
 }
@@ -15,16 +27,37 @@
   word-break: break-all;
 }
 
-.requirement-card {
-  display: block;
-  min-width: 100px;
-  min-height: 100px;
-  position: fixed;
-  top: 100px;
-  left: 100px;
+/*popup styles*/
+.attribute-panel {
+  font-style: italic;
 }
 
-.my-logo {
-  font-size: 32px;
-  vertical-align: middle;
+.general-wrapper {
+  margin-top: 10px;
+  display: flex;
+}
+
+.content {
+  min-width: 55%
+}
+
+.sidebar {
+  margin-left: 10px;
+  max-width: 45%;
+}
+
+.row {
+  display: flex;
+}
+
+.label {
+  min-width: 70px;
+}
+
+.value {
+  margin-left: 10px;
+  margin-right: 5px;
+  max-width: 85%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }

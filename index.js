@@ -3,9 +3,14 @@ var app = express();
 var path = require('path');
 var config = require('./setting.js'); //you have to create file which exports json object with settings
 var sql = require('mssql');
+var bodyParser = require('body-parser');
 
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname+'/view')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 //http://www.tutorialsteacher.com/nodejs/access-sql-server-in-nodejs
 //https://github.com/patriksimek/node-mssql#connection-pools
@@ -18,6 +23,15 @@ app.get('/', function(req,res) {
       res.render(path.join(__dirname+'/view/index.ejs'), {backlog: recordset});
     });
   });
+});
+
+app.post('/api/getRequirementId', function(req, res) {
+  const pool1 = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool1);
+    request.query('select * from backlog where id = ' + req.body.req_id + 'order by priority DESC', function (err, recordset) {
+      res.send(recordset);
+  });
+});
 });
 
 app.listen(3000, function(){ //
