@@ -64,21 +64,14 @@
             document.getElementById('logout-btn').style.display = 'inline-block';
             document.getElementById('create-btn').style.display = 'inline-block';
             document.getElementById('backlog').style.display = 'block';
-            document.cookie = 'path=/; user=' + data.recordset[0].Name;
+            localStorage.setItem('user', data.recordset[0].Name);
           }
         }
       )};
 
-      function getCookie(name) {
-        var matches = document.cookie.match(new RegExp(
-          "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-      };
-
       function logout (){
         var date = new Date(0);
-        document.cookie = 'expires=-1';
+        localStorage.removeItem('user');
         document.getElementById('logout-btn').style.display = 'none';
         document.getElementById('create-btn').style.display = 'none';
         document.getElementById('backlog').style.display = 'none';
@@ -87,7 +80,7 @@
       };
 
       function ready(){
-        if (!getCookie('user')) {
+        if (localStorage.getItem('user')) {
           document.getElementById('login-btn').style.display = 'none';
         } else {
           document.getElementById('logout-btn').style.display = 'none';
@@ -98,7 +91,7 @@
       document.addEventListener('DOMContentLoaded', ready);
 
       function createRequirement(){
-        alert(getCookie('user'))
+        alert(localStorage.getItem('user'));
       }
     </script>
 
