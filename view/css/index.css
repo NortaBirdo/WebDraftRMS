@@ -38,12 +38,12 @@
 }
 
 .content {
-  min-width: 55%
+  width: 600px;
 }
 
 .sidebar {
-  margin-left: 10px;
-  max-width: 45%;
+  margin-left: 5px;
+  width: 300px;
 }
 
 .row {
@@ -57,7 +57,7 @@
 .value {
   margin-left: 10px;
   margin-right: 5px;
-  max-width: 85%;
+  width: 85%;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
