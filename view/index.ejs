@@ -16,7 +16,7 @@
         return d.getDate() + '-' + monthNames[d.getMonth()] + '-' + d.getFullYear();
       };
 
-      function showPopup(id) {
+      function showRequiremntCard(id) {
         document.getElementById('requirement-card').style.display = 'block';
 
         document.getElementById('req_id').innerHTML = id;
@@ -44,21 +44,98 @@
         });
       };
 
-      function closePopup(){
+      function closeRequirementCard(){
         document.getElementById('requirement-card').style.display = 'none';
       };
 
+      function showLoginCard(){
+        document.getElementById('login-card').style.display = 'block';
+      };
+
+      function login(){
+        $.post('/api/login', {
+          email: document.getElementById('email').value,
+          pass: document.getElementById('pass').value
+        },
+        function(data){
+          if (data.recordset[0].Name) {
+            document.getElementById('login-card').style.display = 'none';
+            document.getElementById('login-btn').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'inline-block';
+            document.getElementById('create-btn').style.display = 'inline-block';
+            document.getElementById('backlog').style.display = 'block';
+            document.cookie = 'path=/; user=' + data.recordset[0].Name;
+          }
+        }
+      )};
+
+      function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+          "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+      };
+
+      function logout (){
+        var date = new Date(0);
+        document.cookie = 'expires=-1';
+        document.getElementById('logout-btn').style.display = 'none';
+        document.getElementById('create-btn').style.display = 'none';
+        document.getElementById('backlog').style.display = 'none';
+        document.getElementById('login-btn').style.display = 'inline-block';
+        document.getElementById('requirement-card').style.display = 'none'; //closeRequirementCard();
+      };
+
+      function ready(){
+        if (!getCookie('user')) {
+          document.getElementById('login-btn').style.display = 'none';
+        } else {
+          document.getElementById('logout-btn').style.display = 'none';
+          document.getElementById('create-btn').style.display = 'none';
+          document.getElementById('backlog').style.display = 'none';
+        }
+      };
+      document.addEventListener('DOMContentLoaded', ready);
+
+      function createRequirement(){
+        alert(getCookie('user'))
+      }
     </script>
+
     <div class="nav-wrapper">
       <span class="my-logo">DraftRMS</span>
       <ul class="right hide-on-med-and-down">
-        <a class="waves-effect waves-light btn">Create New</a>
-        <a class="waves-effect waves-light btn">Log In</a>
-        <a class="waves-effect waves-light btn">Log Out</a>
+        <a class="waves-effect waves-light btn" id="create-btn" onclick="createRequirement()">Create New</a>
+        <a class="waves-effect waves-light btn" onclick="showLoginCard()" id="login-btn">Log In</a>
+        <a class="waves-effect waves-light btn" id="logout-btn" onclick="logout()">Log Out</a>
       </ul>
     </div>
 
-    <!-- Modal Popup -->
+    <!-- Modal Requirement Popup -->
+    <div id="login-card" class="login-card modal">
+      <div class="modal-content">
+
+          <div class="row">
+            <div class="label">
+              <label for="email">Email</label>
+            </div>
+            <div class="input">
+              <input type="email" id="email">
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">
+              <label for="pass">Password</label>
+            </div>
+            <div class="input">
+              <input type="password" id="pass">
+            </div>
+          </div>
+          <button class="btn waves-effect waves-light" onclick="login()">Submit</button>
+      </div>
+    </div>
+
+    <!-- Modal Requirement Popup -->
     <div class="modal" id="requirement-card">
       <div class="modal-content">
         <h4>Requirement Id: <span id="req_id"></span></h4>
@@ -134,12 +211,12 @@
 
       </div>
       <div class="modal-footer">
-        <span class="modal-action modal-close waves-effect waves-green btn-flat" onclick="closePopup()">Close</span>
+        <span class="modal-action modal-close waves-effect waves-green btn-flat" onclick="closeRequirementCard()">Close</span>
       </div>
     </div>
 
     <!--backlog content-->
-    <div class="row">
+    <div class="row" id="backlog">
       <div class="col s12">
         <table class="bordered highlight responsive-table backlog">
           <thead>
@@ -159,7 +236,7 @@
           </thead>
           <tbody>
             <% for(var i=0; i<backlog.recordset.length; i++) {%>
-              <tr onclick="showPopup('<%= backlog.recordset[i].Id  %> ')">
+              <tr onclick="showRequiremntCard('<%= backlog.recordset[i].Id  %> ')">
                 <td class="center-align modal-trigger"><%= backlog.recordset[i].Id  %></td>
                 <td class="center-align"><%= backlog.recordset[i].Group  %></td>
                 <td class="center-align"><%= backlog.recordset[i].Type  %></td>

@@ -27,7 +27,7 @@
   word-break: break-all;
 }
 
-/*popup styles*/
+/*requirement card styles*/
 .attribute-panel {
   font-style: italic;
 }
@@ -60,4 +60,13 @@
   width: 85%;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/*login card styles*/
+.login-card {
+  width: 400px;
+}
+
+.login-card .input {
+  width: 300px;
 }

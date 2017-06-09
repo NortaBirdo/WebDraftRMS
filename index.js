@@ -30,8 +30,18 @@ app.post('/api/getRequirementId', function(req, res) {
     var request = new sql.Request(pool1);
     request.query('select * from backlog where id = ' + req.body.req_id + 'order by priority DESC', function (err, recordset) {
       res.send(recordset);
+    });
   });
 });
+
+app.post('/api/login', function(req, res) {
+  const pool1 = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool1);
+    request.query("select * from [User] where email = '" + req.body.email + "' and [password] = '" + req.body.pass+"'", function (err, recordset) {
+      console.log(err);
+      res.send(recordset);
+    });
+  });
 });
 
 app.listen(3000, function(){ //
