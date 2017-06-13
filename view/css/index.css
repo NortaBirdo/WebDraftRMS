@@ -32,9 +32,51 @@
   font-style: italic;
 }
 
+.tab-panel {
+  display: flex;
+  border-bottom: 1px solid grey;
+  margin-top: 5px;
+}
+
+.single-tab {
+  display: block;
+  width: 100px;
+  height: 30px;
+  text-align: center;
+}
+
+.single-tab:hover {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+}
+
 .general-wrapper {
   margin-top: 10px;
   display: flex;
+}
+
+#commentTab {
+  display: none;
+}
+
+#feed {
+  margin-bottom: 10px;
+}
+
+.comment {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.comment-header {
+  font-style: italic;
+}
+
+.answer {
+  width: 100%;
+  height: 80px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
 }
 
 .content {

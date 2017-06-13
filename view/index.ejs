@@ -16,7 +16,7 @@
         return d.getDate() + '-' + monthNames[d.getMonth()] + '-' + d.getFullYear();
       };
 
-      function showRequiremntCard(id) {
+      function showRequirementCard(id) {
         document.getElementById('requirement-card').style.display = 'block';
 
         document.getElementById('req_id').innerHTML = id;
@@ -76,7 +76,7 @@
         document.getElementById('create-btn').style.display = 'none';
         document.getElementById('backlog').style.display = 'none';
         document.getElementById('login-btn').style.display = 'inline-block';
-        document.getElementById('requirement-card').style.display = 'none'; //closeRequirementCard();
+        closeRequirementCard();
       };
 
       function ready(){
@@ -93,6 +93,16 @@
       function createRequirement(){
         alert(localStorage.getItem('user'));
       }
+
+      function showRequirementContentTab(){
+        document.getElementById('generalTab').style.display = 'flex';
+        document.getElementById('commentTab').style.display = 'none';
+      }
+
+      function showRequirementCommentTab(){
+        document.getElementById('generalTab').style.display = 'none';
+        document.getElementById('commentTab').style.display = 'block';
+      }
     </script>
 
     <div class="nav-wrapper">
@@ -104,10 +114,9 @@
       </ul>
     </div>
 
-    <!-- Modal Requirement Popup -->
+    <!-- Modal Login Popup -->
     <div id="login-card" class="login-card modal">
       <div class="modal-content">
-
           <div class="row">
             <div class="label">
               <label for="email">Email</label>
@@ -136,7 +145,16 @@
           From '<span id="req_group"></span>' group, was proposed by: <span id="req_author"></span>, at <span id="req_eliciataion"></span>
         </div>
 
-        <div class="general-wrapper">
+        <div class="tab-panel">
+          <div class="single-tab" onclick="showRequirementContentTab()">
+            General
+          </div>
+          <div class="single-tab"  onclick="showRequirementCommentTab()">
+            Comments
+          </div>
+        </div>
+
+        <div class="general-wrapper" id='generalTab'>
           <div class="content">
             <label>Text of Requirement</label>
             <div id="req_text">
@@ -200,6 +218,28 @@
             </div>
           </div>
 
+        </div> <!-- end of wrapper for content-->
+
+        <div class="general-wrapper" id="commentTab">
+          <div id="feed">
+            <div class="comment">
+              <p class="comment-header">Comment was written at 02-Jun-2017 17:55 by Smirnov</p>
+              <p>Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2Text of comment2</p>
+            </div>
+            <div class="comment">
+              <p class="comment-header">Comment was written at 02-Jun-2017 14:55 by Smirnova</p>
+              <p>Text of comment</p>
+            </div>
+          </div>
+
+          <div class=>
+            Send comment:
+          </div>
+          <div class="answer" contenteditable="true">
+
+          </div>
+          <span class="modal-action modal-close waves-effect waves-green btn-flat" onclick="sendComment()">Send</span>
+
         </div>
 
       </div>
@@ -229,7 +269,7 @@
           </thead>
           <tbody>
             <% for(var i=0; i<backlog.recordset.length; i++) {%>
-              <tr onclick="showRequiremntCard('<%= backlog.recordset[i].Id  %> ')">
+              <tr onclick="showRequirementCard('<%= backlog.recordset[i].Id  %> ')">
                 <td class="center-align modal-trigger"><%= backlog.recordset[i].Id  %></td>
                 <td class="center-align"><%= backlog.recordset[i].Group  %></td>
                 <td class="center-align"><%= backlog.recordset[i].Type  %></td>

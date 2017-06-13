@@ -1,7 +1,7 @@
 var express = require("express");
 var app = express();
 var path = require('path');
-var config = require('./setting.js'); //you have to create file which exports json object with settings
+var config = require('./setting.js'); //you have to create file which exports connection string
 var sql = require('mssql');
 var bodyParser = require('body-parser');
 
@@ -39,7 +39,7 @@ app.post('/api/login', function(req, res) {
   const pool1 = new sql.ConnectionPool(config, err => {
     var request = new sql.Request(pool1);
     request.query("select * from [User] where email = '" + req.body.email + "' and [password] = '" + req.body.pass+"'", function (err, recordset) {
-      console.log(err);
+      if (err) console.log(err);
       res.send(recordset);
     });
   });
