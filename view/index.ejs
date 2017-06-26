@@ -2,8 +2,8 @@
 <html>
   <head>
       <title>DraftRMS</title>
-      <link rel="stylesheet" href="css/materialize.css">
       <link rel="stylesheet" href="css/index.css">
+      <link rel="stylesheet" href="css/materialize.css">
   </head>
   <body>
     <script src="js/jquery-3.2.1.min.js" charset="utf-8"></script>
@@ -22,6 +22,9 @@
         document.getElementById('req_id').innerHTML = id;
         localStorage.setItem('req_id', id);
         $.post('/api/getRequirementId', {req_id: id}, function(data){
+          //https://stackoverflow.com/questions/3338642/updating-address-bar-with-new-url-without-hash-or-reloading-the-page
+          window.history.pushState("object or string", "Title", "/"+id);
+
           document.getElementById('req_text').innerHTML = data.recordset[0].RawDataPlant;
           document.getElementById('req_group').innerHTML = data.recordset[0].Group;
           document.getElementById('req_author').innerHTML = data.recordset[0].Authors;
@@ -51,6 +54,7 @@
 
       function closeRequirementCard(){
         document.getElementById('requirement-card').style.display = 'none';
+        window.history.pushState("", "", "/");
       };
 
       function showLoginCard(){
@@ -110,6 +114,10 @@
       function ready(){
         if (localStorage.getItem('user')) {
           document.getElementById('login-btn').style.display = 'none';
+          let req_id = window.location.href.match(/\d+$/ig);
+          if (req_id ) {
+            showRequirementCard(req_id)
+          }
         } else {
           document.getElementById('logout-btn').style.display = 'none';
           document.getElementById('create-btn').style.display = 'none';
@@ -172,6 +180,21 @@
         <a class="waves-effect waves-light btn" id="logout-btn" onclick="logout()">Log Out</a>
       </ul>
     </div>
+
+<!--    <div class="filter">
+      <form class="" action="index.html" method="post">
+        Id: <input type="text" name="" value="">
+        Type: <input type="checkbox" name="" value=""> SR+SolR <input type="checkbox" name="" value=""> BR
+        Requirement Text: <input type="text" name="" value="">
+        Status:
+          <input type="checkbox" name="" value=""> Proposed
+          <input type="checkbox" name="" value=""> Evalueted
+          <input type="checkbox" name="" value=""> Included
+          <input type="checkbox" name="" value=""> Archived
+          <input type="checkbox" name="" value=""> Rejected
+        Authors: <input type="text" name="" value="">
+      </form>
+    </div>-->
 
     <!-- Modal Login Popup -->
     <div id="login-card" class="login-card modal">

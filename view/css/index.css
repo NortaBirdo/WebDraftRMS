@@ -9,6 +9,11 @@
   align-items: baseline;
 }
 
+/*filter styles*/
+.filter {
+  display: flex;
+}
+
 /*backlog styles*/
 .backlog_10 {
   width: 10%;

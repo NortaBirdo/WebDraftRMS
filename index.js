@@ -27,6 +27,15 @@ app.get('/', function(req,res) {
   });
 });
 
+app.get('/:id', (req, res)=>{
+  const pool = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool);
+    request.query('select * from backlog order by priority DESC', function (err, recordset) {
+      res.render(path.join(__dirname+'/view/index.ejs'), {backlog: recordset});
+    });
+  });
+});
+
 app.post('/api/getRequirementId', function(req, res) {
   const pool1 = new sql.ConnectionPool(config, err => {
     var request = new sql.Request(pool1);
@@ -51,7 +60,7 @@ app.post ('/api/getComment', (req, res)=>{
     select c.[Id]
       ,c.[Text]
       ,c.[Timestamp]
-      ,u.[Name] as UserName from comment as c 
+      ,u.[Name] as UserName from comment as c
       left join [User] as u on u.id = c.UserId
       where c.RequirementId = ${req.body.req_id} order by c.[Timestamp] DESC`;
 
