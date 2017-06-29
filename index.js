@@ -18,22 +18,21 @@ app.use(bodyParser.urlencoded({
 //https://stackoverflow.com/questions/24582338/how-can-i-include-css-files-using-node-express-and-ejs
 //https://tproger.ru/articles/localstorage/
 
-app.get('/', function(req,res) {
-  const pool1 = new sql.ConnectionPool(config, err => {
-    var request = new sql.Request(pool1);
-    request.query('select * from backlog order by priority DESC', function (err, recordset) {
-      res.render(path.join(__dirname+'/view/index.ejs'), {backlog: recordset});
-    });
-  });
-});
-
-app.get('/:id', (req, res)=>{
+function getBacklog(req, res) {
   const pool = new sql.ConnectionPool(config, err => {
     var request = new sql.Request(pool);
     request.query('select * from backlog order by priority DESC', function (err, recordset) {
       res.render(path.join(__dirname+'/view/index.ejs'), {backlog: recordset});
     });
   });
+}
+
+app.get('/', function(req,res) {
+  getBacklog(req, res)
+});
+
+app.get('/:id', (req, res)=>{
+  getBacklog(req, res)
 });
 
 app.post('/api/getRequirementId', function(req, res) {
