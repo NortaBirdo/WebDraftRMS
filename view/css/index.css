@@ -7,6 +7,22 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  position: relative;
+  padding-left: 28px;
+}
+
+.no-data-fetched {
+  opacity: 0;
+  color: red;
+  text-transform: uppercase;
+  font-size: 18px;
+  position: absolute;
+  top: 46px;
+  transition: all 1.5s;
+}
+
+.no-data-fetched.shown {
+  opacity: 1;
 }
 
 /*filter styles*/
@@ -48,6 +64,7 @@
   width: 100px;
   height: 30px;
   text-align: center;
+  cursor: pointer;
 }
 
 .single-tab:hover {
@@ -61,6 +78,17 @@
 
 #commentTab {
   display: none;
+}
+
+#attachment-tab {
+  display: none;
+}
+
+.attachment i {
+    position: relative;
+    top: 2px;
+    margin-left: 4px;
+    color: #444;
 }
 
 #feed {
@@ -128,4 +156,13 @@
 
 .login-card .input {
   width: 300px;
+}
+
+tr {
+  transition: all 0.5s !important;
+  opacity: 1;
+}
+
+.tr-hided {
+  opacity: 0;
 }

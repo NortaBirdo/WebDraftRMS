@@ -4,6 +4,7 @@
       <title>DraftRMS</title>
       <link rel="stylesheet" href="css/index.css">
       <link rel="stylesheet" href="css/materialize.css">
+      <link rel="stylesheet" href="css/font-awesome.min.css">
   </head>
   <body>
     <script src="js/jquery-3.2.1.min.js" charset="utf-8"></script>
@@ -11,27 +12,13 @@
 
     <div class="nav-wrapper">
       <span class="my-logo">DraftRMS</span>
+      <span class="no-data-fetched">No data for these filters!</span>
       <ul class="right hide-on-med-and-down">
         <a class="waves-effect waves-light btn" id="create-btn" onclick="createRequirement()">Create New</a>
         <a class="waves-effect waves-light btn" onclick="showLoginCard()" id="login-btn">Log In</a>
         <a class="waves-effect waves-light btn" id="logout-btn" onclick="logout()">Log Out</a>
       </ul>
     </div>
-
-<!--    <div class="filter">
-      <form class="" action="index.html" method="post">
-        Id: <input type="text" name="" value="">
-        Type: <input type="checkbox" name="" value=""> SR+SolR <input type="checkbox" name="" value=""> BR
-        Requirement Text: <input type="text" name="" value="">
-        Status:
-          <input type="checkbox" name="" value=""> Proposed
-          <input type="checkbox" name="" value=""> Evalueted
-          <input type="checkbox" name="" value=""> Included
-          <input type="checkbox" name="" value=""> Archived
-          <input type="checkbox" name="" value=""> Rejected
-        Authors: <input type="text" name="" value="">
-      </form>
-    </div>-->
 
     <!-- Modal Login Popup -->
     <div id="login-card" class="login-card modal">
@@ -70,6 +57,9 @@
           </div>
           <div class="single-tab"  onclick="showRequirementCommentTab()">
             Comments
+          </div>
+          <div class="single-tab"  onclick="showRequirementAttachmentTab()">
+            Attachments
           </div>
         </div>
 
@@ -153,6 +143,19 @@
           </div>
         </div>
 
+        <div class="general-wrapper" id="attachment-tab">
+          <form ref='upload-form' 
+            id='upload-form' 
+            action='api/addAttachment' 
+            method='post' 
+            encType="multipart/form-data">
+              <input type="file" name="sampleFile" />
+              <input type='submit' class="btn-flat" value='Upload!' />
+          </form>
+          <ul id="attachment-list">
+          </ul>
+        </div>
+
       </div>
       <div class="modal-footer">
         <span class="modal-action modal-close waves-effect waves-green btn-flat btn-close" onclick="closeRequirementCard()">Close</span>
@@ -165,20 +168,53 @@
         <table class="bordered highlight responsive-table backlog">
           <thead>
             <tr>
-              <th class="backlog_amount center-align">Id</th>
-              <th class="backlog_10 center-align">Group</th>
-              <th class="backlog_10 center-align">Type</th>
-              <th>Requirement</th>
-              <th class="backlog_amount center-align">Priority</th>
-              <th class="backlog_amount center-align">BE</th>
-              <th class="backlog_amount center-align">FE</th>
-              <th class="backlog_status center-align">Status</th>
-              <th class="backlog_10 center-align">Authors</th>
-              <th class="backlog_10 center-align">CR Link</th>
-              <th class="backlog_10 center-align">Sorce</th>
+              <th class="backlog_amount center-align">
+                <div>Id</div>
+                <div><input id="filter-id" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_10 center-align">
+                <div>Group</div>
+                <div><input id="filter-group" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_10 center-align">
+                <div>Type</div>
+                <div><input id="filter-type" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th>
+                <div>Requirement</div>
+                <div><input id="filter-requirement" onkeyup="filterKeyUp()"></div>
+              </th>
+              <th class="backlog_amount center-align">
+                <div>Priority</div>
+                <div><input id="filter-priority" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_amount center-align">
+                <div>BE</div>
+                <div><input id="filter-be" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_amount center-align">
+                <div>FE</div>
+                <div><input id="filter-fe" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_status center-align">
+                <div>Status</div>
+                <div><input id="filter-status" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_10 center-align">
+                <div>Authors</div>
+                <div><input id="filter-authors" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_10 center-align">
+                <div>CR Link</div>
+                <div><input id="filter-cr-link" onkeyup="filterKeyUp()"/></div>
+              </th>
+              <th class="backlog_10 center-align">
+                <div>Source</div>
+                <div><input id="filter-source" onkeyup="filterKeyUp()"/></div>
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="backlog-body">
             <% for(var i=0; i<backlog.recordset.length; i++) {%>
               <tr onclick="showRequirementCard('<%= backlog.recordset[i].Id  %> ')">
                 <td class="center-align modal-trigger"><a href="localhost:3000/<%= backlog.recordset[i].Id  %>"><%= backlog.recordset[i].Id  %></a></td>
@@ -192,7 +228,7 @@
                 <td><%= backlog.recordset[i].Authors  %></td>
                 <td><a href="<%= backlog.recordset[i].ChangeRequestLink  %>" target="_blank"><%= backlog.recordset[i].ChangeRequestLink  %></a> </td>
                 <td><%= backlog.recordset[i].Source  %></td>
-            </tr>
+              </tr>
             <% } %>
           </tbody>
         </table>

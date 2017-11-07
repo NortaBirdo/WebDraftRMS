@@ -39,7 +39,11 @@ function showRequirementCard(id) {
     $.post('/api/getComment', {req_id: id}, (data)=>{
       loadComment(data);
     });
-});
+
+    $.post('/api/getAttachments', {req_id: id}, (data)=>{
+      loadAttachments(data);
+    });
+  });
 };
 
 function closeRequirementCard(){
@@ -92,13 +96,12 @@ function sendComment(){
       user_id: localStorage.getItem('user_id'),
       req_id: localStorage.getItem('req_id')
     }, function(d){
-
       $.post('/api/getComment', {req_id: localStorage.getItem('req_id')}, (data)=>{
         loadComment(data);
         answer.value = "";
-    })
-  })
-}
+      });
+    });
+  }
 };
 
 function ready(){
@@ -120,15 +123,10 @@ function createRequirement(){
   alert(localStorage.getItem('user'));
 }
 
-function showRequirementContentTab(){
-  document.getElementById('generalTab').style.display = 'flex';
-  document.getElementById('commentTab').style.display = 'none';
-}
-
 function loadComment(data) {
   if (data) {
     var feed  = document.getElementById('feed');
-
+    
     while(feed.childNodes[0]){
      feed.removeChild(feed.childNodes[0]);
     }
@@ -151,11 +149,141 @@ function loadComment(data) {
   }
 };
 
+function loadAttachments(data) {
+  var list  = document.getElementById('attachment-list');
+  if (list.children.length)
+    while(list.childNodes[0]){
+      list.removeChild(list.childNodes[0]);
+    }
+
+  if (!data) return;  
+
+  for (var i = 0; i < data.recordset.length; i++) {
+    var attachment = document.createElement('li');
+    attachment.className = 'attachment';
+    attachment.innerHTML = '<span>' + data.recordset[i].Name + '</span><a href="' + data.recordset[i].Path + '" download="' + data.recordset[i].Name + '" class="file-link"><i class="fa fa-download" aria-hidden="true" data-file-name="' + data.recordset[i].Path + '"></i></a>';
+    list.appendChild(attachment);
+  }
+}
+
+function showRequirementContentTab(){
+  document.getElementById('generalTab').style.display = 'flex';
+  document.getElementById('commentTab').style.display = 'none';
+  document.getElementById('attachment-tab').style.display = 'none';
+}
+
 function showRequirementCommentTab(){
   document.getElementById('generalTab').style.display = 'none';
   document.getElementById('commentTab').style.display = 'block';
+  document.getElementById('attachment-tab').style.display = 'none';
 
   $.post('/api/getComment', {req_id: localStorage.getItem('req_id')}, (data)=>{
     loadComment(data);
   });
+}
+
+function showRequirementAttachmentTab(){
+  document.getElementById('generalTab').style.display = 'none';
+  document.getElementById('commentTab').style.display = 'none';
+  document.getElementById('attachment-tab').style.display = 'block';
+
+  $.post('/api/getComment', {req_id: localStorage.getItem('req_id')}, (data)=>{
+    loadComment(data);
+  });
+}
+
+var timer;
+
+
+function filterKeyUp() {
+  if(timer) {
+      clearTimeout(timer);
+  }
+  
+  timer = setTimeout(filterData, 700);
+}
+
+function constructQuery() {
+  var id = document.getElementById('filter-id').value;
+  var group = document.getElementById('filter-group').value;
+  var type = document.getElementById('filter-type').value;
+  var requirement = document.getElementById('filter-requirement').value;
+  var priority = document.getElementById('filter-priority').value;
+  var be = document.getElementById('filter-be').value;
+  var fe = document.getElementById('filter-fe').value;
+  var status = document.getElementById('filter-status').value;
+  var authors = document.getElementById('filter-authors').value;
+  var crLink = document.getElementById('filter-cr-link').value;
+  var source = document.getElementById('filter-source').value;
+
+  var query = 'select * from backlog where 1=1';
+  if (id) query += ' and id = ' + id;
+  if (priority) query += ' and [priority] = ' + priority;
+  if (be) query += ' and BE_Estimate = ' + be;
+  if (fe) query += ' and FE_Estimate = ' + fe;
+  if (group) query += ` and [group] like '%${group}%'`;
+  if (type) query += ` and [type] like '%${type}%'`;
+  if (requirement) query += ` and [RawDataPlant] like '%${requirement}%'`;
+  if (status) query += ` and [status] like '%${status}%'`;
+  if (authors) query += ` and [authors] like '%${authors}%'`;
+  if (crLink) query += ` and [ChangeRequestLink] like '%${crLink}%'`;
+  if (source) query += ` and [source] like '%${source}%'`;
+
+  query += ' order by priority DESC';
+
+  return query;
+}
+
+function filterData() {
+  var query = constructQuery();
+  $.get('/api/filterBacklog', {query: query}, (data)=>{
+    if (data.recordset.length) renderFilteredData(data.recordset);
+    else {
+      var elem = document.getElementsByClassName('no-data-fetched')[0];
+      elem.className += ' shown';
+      setTimeout(() => {
+        var span = document.getElementsByClassName('no-data-fetched')[0];
+        span.className = 'no-data-fetched';
+      }, 4000);
+    }
+  });
+}
+
+function renderFilteredData(data) {
+  var tbody = document.getElementById('backlog-body');
+  tbody.innerHTML = '';
+
+  for (i = 0; i < data.length; i++) {
+    var tr = document.createElement('tr');
+    tr.className = 'tr-hided';
+    tr.setAttribute('data-id', data[i].Id)
+    tr.onclick = (e) => {
+      var parent = e.target.href ? e.target.parentElement.parentElement : e.target.parentElement;      
+      showRequirementCard(parent.getAttribute('data-id')); 
+    };
+    tr.innerHTML = `
+      <td class="center-align modal-trigger"><a href="localhost:3000/${data[i].Id}">${data[i].Id}</a></td>
+      <td class="center-align">${data[i].Group}</td>
+      <td class="center-align">${data[i].Type}</td>
+      <td>${data[i].RawDataPlant}</td>
+      <td class="center-align">${data[i].Priority}</td>
+      <td class="center-align">${data[i].BE_Estimate ? data[i].BE_Estimate : ''}</td>
+      <td class="center-align">${data[i].FE_Estimate ? data[i].FE_Estimate : ''}</td>
+      <td class="center-align">${data[i].Status}</td>
+      <td>${data[i].Authors}</td>
+      <td><a href="${data[i].ChangeRequestLink ? data[i].ChangeRequestLink : '#'}" target="_blank">${data[i].ChangeRequestLink ? data[i].ChangeRequestLink : ''}</a> </td>
+      <td>${data[i].Source ? data[i].Source : ''}</td>
+    `;
+
+    tbody.appendChild(tr);
+  }
+
+  var trs = tbody.getElementsByTagName('tr');
+  var i = 0;
+  (function loop() {
+    trs[i].className = '';
+    if (++i < trs.length) {
+        setTimeout(loop, 40);
+    }
+  })();
 }

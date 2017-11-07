@@ -1,4 +1,5 @@
 var express = require("express");
+const fileUpload = require('express-fileupload');
 var app = express();
 var path = require('path');
 var config = require('./setting.js'); //you have to create file which exports connection string
@@ -12,6 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+app.use(fileUpload());
 
 //http://www.tutorialsteacher.com/nodejs/access-sql-server-in-nodejs
 //https://github.com/patriksimek/node-mssql#connection-pools
@@ -28,11 +30,22 @@ function getBacklog(req, res) {
 }
 
 app.get('/', function(req,res) {
-  getBacklog(req, res)
+  getBacklog(req, res);
 });
 
 app.get('/:id', (req, res)=>{
   getBacklog(req, res)
+});
+
+app.get('/api/filterBacklog', (req, res) => {
+  //console.log(req.query.query);
+  const pool = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool);
+
+    request.query(req.query.query, (err, recordset)=>{
+      res.send(recordset);
+    })
+  })
 });
 
 app.post('/api/getRequirementId', function(req, res) {
@@ -90,6 +103,60 @@ app.post('/api/addcomment', function(req,res) {
       if (err) console.log(err);
       res.send(recordset);
     })
+  })
+});
+
+app.post('/api/getAttachments', (req, res)=>{
+  var getAttachmentRequest = `
+    select Id
+      ,RequirementId
+      ,Name
+      ,Path
+      ,Timestamp
+    from dbo.Attachment
+    where RequirementId = ${req.body.req_id} 
+    order by Timestamp DESC`;
+
+  const pool = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool);
+
+    request.query(getAttachmentRequest, (err, recordset)=>{
+      if (err) console.log(err);
+      res.send(recordset);
+    })
+  })
+})
+
+app.post('/api/addAttachment', function(req,res) {
+  const pool = new sql.ConnectionPool(config, err=> {
+    var request = new sql.Request(pool);
+    var now = new Date();
+
+    var reqId = req.header('Referer').substring(req.header('Referer').lastIndexOf('/') + 1);
+
+    let sampleFile = req.files.sampleFile;
+    let nameWithData = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + req.files.sampleFile.name;
+    let pathToFileForDb = './attachments/' + nameWithData;
+    let localPathToFile = 'view/attachments/' + nameWithData;
+
+    const queryInsert = `insert into dbo.Attachment (RequirementId, Name, Path, Timestamp)
+      values (
+        ${reqId},
+        '${sampleFile.name}',
+        '${pathToFileForDb}',
+        '${moment().format('YYYY-MM-DD hh:mm:ss')}'
+      )`;
+
+    request.query(queryInsert, function(err, recordset){
+      if (err) console.log(err);
+    })
+    
+    sampleFile.mv(localPathToFile, function(err) {
+      if (err)
+        return res.status(500).send(err);
+  
+      return res.status(200).redirect('/' + reqId);
+    });
   })
 });
 
