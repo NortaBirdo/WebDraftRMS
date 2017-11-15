@@ -2,14 +2,11 @@
 <html>
   <head>
       <title>DraftRMS</title>
-      <link rel="stylesheet" href="css/index.css">
       <link rel="stylesheet" href="css/materialize.css">
       <link rel="stylesheet" href="css/font-awesome.min.css">
-  </head>
+      <link rel="stylesheet" href="css/index.css">
+    </head>
   <body>
-    <script src="js/jquery-3.2.1.min.js" charset="utf-8"></script>
-    <script src="js/backlog.js"></script>
-
     <div class="nav-wrapper">
       <span class="my-logo">DraftRMS</span>
       <span class="no-data-fetched">No data for these filters!</span>
@@ -46,12 +43,13 @@
     <!-- Modal Requirement Popup -->
     <div class="modal" id="requirement-card">
       <div class="modal-content">
-        <h4>Requirement Id: <span id="req_id"></span></h4>
-        <div class="attribute-panel">
+        <h4 class="hide-in-create">Requirement Id: <span id="req_id"></span></h4>
+        <h4 class="show-in-create">New requirement</h4>
+        <div class="attribute-panel hide-in-create">
           From '<span id="req_group"></span>' group, was proposed by: <span id="req_author"></span>, at <span id="req_eliciataion"></span>
         </div>
 
-        <div class="tab-panel">
+        <div class="tab-panel hide-in-create hide-in-edit">
           <div class="single-tab" onclick="showRequirementContentTab()">
             General
           </div>
@@ -66,8 +64,10 @@
         <div class="general-wrapper" id='generalTab'>
           <div class="content">
             <label>Text of Requirement</label>
-            <div id="req_text">
-
+            <div id="req_text" class="view-field">
+            </div>
+            <div class="edit-field req-text-wrapper">
+              <textarea id="req_text_edit" class="req-text" rows="5"></textarea>
             </div>
           </div>
 
@@ -76,8 +76,11 @@
               <div class="label">
                 <label>Priority</label>
               </div>
-              <div class="value">
+              <div class="value view-field">
                 <span id="req_prior"></span>
+              </div>
+              <div class="value edit-field">
+                <input type="number" id="req_prior_edit" />
               </div>
             </div>
 
@@ -85,17 +88,52 @@
               <div class="label">
                 <label>Status</label>
               </div>
-              <div class="value">
+              <div class="value view-field">
                 <span id="req_status"></span> <a href="" id="req_CR" target="_blank">(see the CR)</a>
               </div>
+              <div class="input-field value edit-field">
+                <select id="status-select">
+                  <option value="" disabled selected>Choose your option</option>
+                </select>
+              </div>
             </div>
+            
+            <div class="row edit-row">
+              <div class="label">
+                <label>CR Link</label>
+              </div>
+              <div class="value edit-field">
+                <input type="text" id="req_crLink_edit" />
+              </div>
+            </div>
+            
+            <div class="row edit-row">
+              <div class="label">
+                <label>Authors</label>
+              </div>
+              <div class="value edit-field">
+                <input type="text" id="req_authors_edit" />
+              </div>
+            </div>
+            
+            <div class="row edit-row">
+                <div class="label">
+                  <label>Req. date</label>
+                </div>
+                <div class="value edit-field">
+                    <input type="date" id="req_date_edit">
+                </div>
+              </div>
 
             <div class="row">
               <div class="label">
                 <label>BE Estimate</label>
               </div>
-              <div class="value">
+              <div class="value view-field">
                 <span id="req_BE"></span>
+              </div>
+              <div class="value edit-field">
+                <input type="number" id="req_BE_edit" />
               </div>
             </div>
 
@@ -103,17 +141,45 @@
               <div class="label">
                 <label>FE Estimate</label>
               </div>
-              <div class="value">
+              <div class="value view-field">
                 <span id="req_FE"></span>
+              </div>
+              <div class="value edit-field">
+                <input type="number" id="req_FE_edit" />
               </div>
             </div>
 
+            <div class="row edit-row">
+              <div class="label">
+                <label>Group</label>
+              </div>
+              <div class="input-field value edit-field">
+                <select id="group-select">
+                  <option value="" disabled selected>Choose your option</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="row edit-row">
+              <div class="label">
+                <label>Type</label>
+              </div>
+              <div class="input-field value edit-field">
+                <select id="type-select">
+                  <option value="" disabled selected>Choose your option</option>
+                </select>
+              </div>
+            </div>
+            
             <div class="row">
               <div class="label">
                 <label>Source</label>
               </div>
-              <div class="value">
+              <div class="value view-field">
                 <span id="req_sorce"></span>
+              </div>
+              <div class="value edit-field">
+                <textarea class="req-notes" id="req_source_edit" ></textarea>
               </div>
             </div>
 
@@ -121,8 +187,11 @@
               <div class="label">
                 <label>Notes</label>
               </div>
-              <div class="value">
+              <div class="value view-field">
                 <span id="req_notes"></span>
+              </div>
+              <div class="value edit-field">
+                <textarea class="req-notes" id="req_notes_edit" ></textarea>
               </div>
             </div>
           </div>
@@ -159,6 +228,8 @@
       </div>
       <div class="modal-footer">
         <span class="modal-action modal-close waves-effect waves-green btn-flat btn-close" onclick="closeRequirementCard()">Close</span>
+        <span class="modal-action modal-close waves-effect waves-green btn-flat btn-edit view-field" onclick="editRequirementCard()">Edit</span>
+        <span class="modal-action modal-close waves-effect waves-green btn-flat btn-save edit-field" onclick="saveRequirement()">Save</span>
       </div>
     </div>
 
@@ -216,7 +287,7 @@
           </thead>
           <tbody id="backlog-body">
             <% for(var i=0; i<backlog.recordset.length; i++) {%>
-              <tr onclick="showRequirementCard('<%= backlog.recordset[i].Id  %> ')">
+              <tr onclick="showRequirementCard('<%= backlog.recordset[i].Id  %>', 'view')">
                 <td class="center-align modal-trigger"><a href="localhost:3000/<%= backlog.recordset[i].Id  %>"><%= backlog.recordset[i].Id  %></a></td>
                 <td class="center-align"><%= backlog.recordset[i].Group  %></td>
                 <td class="center-align"><%= backlog.recordset[i].Type  %></td>
@@ -235,5 +306,8 @@
       </div>
     </div> <!-- end of backlog-->
 
+    <script src="js/jquery-3.2.1.min.js" charset="utf-8"></script>
+    <script src="js/materialize.min.js"></script>
+    <script src="js/backlog.js"></script>
   </body>
 </html>

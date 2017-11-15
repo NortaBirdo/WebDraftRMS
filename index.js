@@ -48,6 +48,79 @@ app.get('/api/filterBacklog', (req, res) => {
   })
 });
 
+app.get('/api/getDictionaries', (req, res) => {
+  const pool = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool);
+    var result = {};
+
+    request.query('select Id, Caption as Value from dbo.ReqGroup').then(groups => {
+      result.groups = groups;
+      return request.query('select Id, Caption as Value from dbo.RequirementType');
+    }).then(types => {
+      result.types = types;
+      return request.query('select Id, Caption as Value from dbo.RequirementStatus');
+    }).then(statuses => {
+      result.statuses = statuses;
+      res.send(result);
+    })
+  })
+});
+
+app.post('/api/createOrUpdateRequirement', (req, res) => {
+  const pool = new sql.ConnectionPool(config, err=> {
+    var request = new sql.Request(pool);
+    console.log(req.body);
+    var query = req.body.id ? 
+      `update dbo.Requirement set
+      [TypeId] = ${req.body.typeId}
+      ,[Priority] = ${req.body.priority}
+      ,[StatusId] = ${req.body.statusId}
+      ,[GroupId] = ${req.body.groupId}
+      ,[Comment] = '${req.body.comment}'
+      ,[ElicitationDate] = '${req.body.date}'
+      ,[ChangeRequestLink] = '${req.body.crLink}'
+      ,[Authors] = '${req.body.authors}'
+      ,[Source] = '${req.body.source}'
+      ,[RawDataPlant] = '${req.body.text}'
+      ,[BE_Estimate] = ${req.body.be ? req.body.be : null}
+      ,[FE_Estimate] = ${req.body.fe ? req.body.fe : null}
+      where id = ${req.body.id}` :
+
+      `insert into Requirement ([TypeId]
+      ,[Priority]
+      ,[StatusId]
+      ,[GroupId]
+      ,[Comment]
+      ,[ElicitationDate]
+      ,[ChangeRequestLink]
+      ,[Authors]
+      ,[Source]
+      ,[RawDataPlant]
+      ,[BE_Estimate]
+      ,[FE_Estimate])
+      values (
+        ${req.body.typeId}
+        ,${req.body.priority}
+        ,${req.body.statusId}
+        ,${req.body.groupId}
+        ,'${req.body.comment}'
+        ,'${req.body.date}'
+        ,'${req.body.crLink}'
+        ,'${req.body.authors}'
+        ,'${req.body.source}'
+        ,'${req.body.text}'
+        ,${req.body.be ? req.body.be : null}
+        ,${req.body.fe ? req.body.fe : null}
+      )`;
+
+    console.log(query);
+    request.query(query, function(err, recordset){
+      if (err) console.log(err);
+      res.send(recordset);
+    })
+  })
+});
+
 app.post('/api/getRequirementId', function(req, res) {
   const pool1 = new sql.ConnectionPool(config, err => {
     var request = new sql.Request(pool1);

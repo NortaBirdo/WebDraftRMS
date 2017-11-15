@@ -125,12 +125,13 @@
 }
 
 .content {
-  width: 600px;
+  width: 60%;
+  margin-right: 15px;
 }
 
 .sidebar {
   margin-left: 5px;
-  width: 300px;
+  width: 40%;
 }
 
 .row {
@@ -158,6 +159,10 @@
   width: 300px;
 }
 
+.row {
+  margin-bottom: 10px;
+}
+
 tr {
   transition: all 0.5s !important;
   opacity: 1;
@@ -165,4 +170,49 @@ tr {
 
 .tr-hided {
   opacity: 0;
+}
+
+.req-text {
+  width: 100%;
+  height: 100%;
+  resize: none;
+}
+
+.req-notes {
+  width: 100%;
+  height: 80px;
+  resize: none;
+}
+
+.edit-field {
+  display: none;
+}
+
+.general-wrapper .edit-field input {
+  margin: 0;
+  height: 2rem;
+}
+
+.input-field {
+  margin-top: 0;
+}
+
+.req-text-wrapper {
+  height: calc(100% - 20px);
+}
+
+.show-in-create {
+  display: none;
+}
+
+.dropdown-content {
+  max-height: 300px !important;
+}
+
+.modal {
+  max-height: 85%;
+}
+
+.modal .modal-content {
+  padding: 16px 24px;
 }

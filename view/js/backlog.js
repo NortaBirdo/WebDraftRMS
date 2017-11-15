@@ -1,3 +1,9 @@
+var lastState, reqGroups, reqTypes, reqStatuses, dropdownsWereDrawn, isAdmin;
+
+loadDictionaries();
+isAdmin = localStorage.getItem("user_role") === "0";
+hideOrShowReqCreateButton();
+
 function dateFormatting(date) {
   var d = new Date(date);
   var monthNames = ["Jan", "Feb", "March", "Apr", "May", "Jun",
@@ -6,45 +12,157 @@ function dateFormatting(date) {
   return d.getDate() + '-' + monthNames[d.getMonth()] + '-' + d.getFullYear();
 };
 
-function showRequirementCard(id) {
+function formatDateForInput(date) {
+  var d = new Date(date);
+  var month = d.getMonth() < 10 ? '0' + d.getMonth().toString() : d.getMonth().toString();
+  return d.getFullYear() + '-' + month + '-' + d.getDate();
+}
+
+function createRequirement(){
+  showRequirementCard(null, 'create');
+}
+
+function editRequirementCard() {
+  changeReqCardState('edit');
+}
+
+function changeReqCardState(state) {
+  if (state === 'view') {
+    $('.view-field').show();
+    $('.edit-field').hide();
+    $('.edit-row').hide();
+    $('.hide-in-edit').show();
+  } else {
+    showRequirementContentTab();
+    $('.view-field').hide();
+    $('.edit-field').show();
+    $('.edit-row').css('display','flex');
+    $('.hide-in-edit').hide();
+  }
+
+  if (!isAdmin) $('.btn-edit').hide();
+}
+
+function showRequirementCard(id, state) {
+  if (lastState === 'create' && state !== 'create') {
+    $('.hide-in-create').show();
+    $('.show-in-create').hide();
+  }
+
+  if (!dropdownsWereDrawn) drawDropdowns();
+
+  changeReqCardState(state);  
+
   document.getElementById('requirement-card').style.display = 'block';
 
   document.getElementById('req_id').innerHTML = id;
   localStorage.setItem('req_id', id);
-  $.post('/api/getRequirementId', {req_id: id}, function(data){
-    //https://stackoverflow.com/questions/3338642/updating-address-bar-with-new-url-without-hash-or-reloading-the-page
-    window.history.pushState("object or string", "Title", "/"+id);
+  if (state !== 'create') {
+    $.post('/api/getRequirementId', {req_id: id}, function(data){
+      //https://stackoverflow.com/questions/3338642/updating-address-bar-with-new-url-without-hash-or-reloading-the-page
+      window.history.pushState("object or string", "Title", "/"+id);
 
-    document.getElementById('req_text').innerHTML = data.recordset[0].RawDataPlant;
-    document.getElementById('req_group').innerHTML = data.recordset[0].Group;
-    document.getElementById('req_author').innerHTML = data.recordset[0].Authors;
-    if (data.recordset[0].ElicitationDate) {
-      document.getElementById('req_eliciataion').innerHTML = dateFormatting(data.recordset[0].ElicitationDate)
-    } else {
-      document.getElementById('req_eliciataion').innerHTML = 'N/A'
-    }
-    document.getElementById('req_prior').innerHTML = data.recordset[0].Priority;
-    document.getElementById('req_status').innerHTML = data.recordset[0].Status;
-    document.getElementById('req_BE').innerHTML = data.recordset[0].BE_Estimate;
-    document.getElementById('req_FE').innerHTML = data.recordset[0].FE_Estimate;
-    if (data.recordset[0].ChangeRequestLink) {
-      document.getElementById('req_CR').setAttribute("href", data.recordset[0].ChangeRequestLink);
-      document.getElementById('req_CR').style.display = 'inline';
-    } else {
-      document.getElementById('req_CR').style.display = 'none';
-    };
-    document.getElementById('req_sorce').innerHTML = data.recordset[0].Source;
-    document.getElementById('req_notes').innerHTML = data.recordset[0].Comment;
+      document.getElementById('req_text').innerHTML = 
+        document.getElementById('req_text_edit').innerHTML = data.recordset[0].RawDataPlant;
+      document.getElementById('req_group').innerHTML = data.recordset[0].Group;
+      document.getElementById('req_author').innerHTML = data.recordset[0].Authors;
+      document.getElementById('req_authors_edit').value = data.recordset[0].Authors;
+      if (data.recordset[0].ElicitationDate) {
+        document.getElementById('req_eliciataion').innerHTML = dateFormatting(data.recordset[0].ElicitationDate);
+        $('#req_date_edit').val(formatDateForInput(data.recordset[0].ElicitationDate));
+      } else {
+        document.getElementById('req_eliciataion').innerHTML = 'N/A'
+      }
+      document.getElementById('req_prior').innerHTML = 
+        document.getElementById('req_prior_edit').value = data.recordset[0].Priority;
+      document.getElementById('req_status').innerHTML = data.recordset[0].Status;
+      $('#status-select').val(data.recordset[0].StatusId);
+      $('#group-select').val(data.recordset[0].GroupId);
+      $('#type-select').val(data.recordset[0].TypeId);
+      document.getElementById('req_BE').innerHTML = 
+        document.getElementById('req_BE_edit').value = data.recordset[0].BE_Estimate;
+      document.getElementById('req_FE').innerHTML = 
+        document.getElementById('req_FE_edit').value = data.recordset[0].FE_Estimate;
+      if (data.recordset[0].ChangeRequestLink) {
+        document.getElementById('req_CR').setAttribute("href", data.recordset[0].ChangeRequestLink);
+        document.getElementById('req_CR').style.display = 'inline';
+      } else {
+        document.getElementById('req_CR').style.display = 'none';
+      };
+      document.getElementById('req_crLink_edit').value = data.recordset[0].ChangeRequestLink;
+      document.getElementById('req_sorce').innerHTML = 
+        document.getElementById('req_source_edit').value = data.recordset[0].Source;
+      document.getElementById('req_notes').innerHTML = 
+        document.getElementById('req_notes_edit').innerHTML = data.recordset[0].Comment;
 
-    $.post('/api/getComment', {req_id: id}, (data)=>{
-      loadComment(data);
+      $('select').material_select();
+
+      $.post('/api/getComment', {req_id: id}, (data)=>{
+        loadComment(data);
+      });
+
+      $.post('/api/getAttachments', {req_id: id}, (data)=>{
+        loadAttachments(data);
+      });
     });
+  } else {
+    $('.hide-in-create').hide();
+    $('.show-in-create').show();
 
-    $.post('/api/getAttachments', {req_id: id}, (data)=>{
-      loadAttachments(data);
-    });
-  });
+    document.getElementById('req_id').innerHTML = ''
+    document.getElementById('req_text_edit').innerHTML = '';
+    document.getElementById('req_authors_edit').value = '';
+    document.getElementById('req_prior_edit').value = '';
+    document.getElementById('req_BE_edit').value = '';
+    document.getElementById('req_FE_edit').value = '';
+    document.getElementById('req_date_edit').value = '';
+    document.getElementById('req_CR').setAttribute("href", '');
+    
+    document.getElementById('req_source_edit').value = '';
+    document.getElementById('req_notes_edit').innerHTML = '';
+    document.getElementById('req_crLink_edit').value = '';
+
+    $('#status-select').val(0);
+    $('#group-select').val(0);
+    $('#type-select').val(0);
+
+    $('select').material_select();
+  }
+
+  lastState = state;
 };
+
+function saveRequirement() {
+  if (!($('#group-select').val() &&
+      $('#type-select').val() &&
+      $('#req_text_edit').val() &&
+      document.getElementById('req_prior_edit').value &&
+      $('#status-select').val() &&
+      document.getElementById('req_authors_edit').value
+    )) {
+      alert('Please set Group, Type, Req. text, Priority, Status and Authors');
+      return;
+    } 
+  
+  $.post('/api/createOrUpdateRequirement', {
+    id: document.getElementById('req_id').innerHTML,
+    groupId: $('#group-select').val(),
+    typeId: $('#type-select').val(),
+    text: $('#req_text_edit').val(),
+    priority: document.getElementById('req_prior_edit').value,
+    be: document.getElementById('req_BE_edit').value,
+    fe: document.getElementById('req_FE_edit').value,
+    statusId: $('#status-select').val(),
+    authors: document.getElementById('req_authors_edit').value,
+    comment: $('#req_notes_edit').val(),
+    source: document.getElementById('req_source_edit').value,
+    crLink: document.getElementById('req_crLink_edit').value,
+    date: document.getElementById('req_date_edit').value
+  }, function(d){
+    closeRequirementCard();
+    location.reload();
+  });
+}
 
 function closeRequirementCard(){
   document.getElementById('requirement-card').style.display = 'none';
@@ -70,6 +188,8 @@ function login(){
       localStorage.setItem('user', data.recordset[0].Name);
       localStorage.setItem('user_id', data.recordset[0].Id);
       localStorage.setItem('user_role', data.recordset[0].Role);
+      isAdmin = localStorage.getItem("user_role") === "0";
+      hideOrShowReqCreateButton();
       localStorage.setItem('user_email', data.recordset[0].Email);
     }
   }
@@ -81,6 +201,7 @@ function logout (){
   localStorage.removeItem('user_id');
   localStorage.removeItem('user_role');
   localStorage.removeItem('user_email');
+  hideOrShowReqCreateButton();
   document.getElementById('logout-btn').style.display = 'none';
   document.getElementById('create-btn').style.display = 'none';
   document.getElementById('backlog').style.display = 'none';
@@ -109,7 +230,7 @@ function ready(){
     document.getElementById('login-btn').style.display = 'none';
     let req_id = window.location.href.match(/\d+$/ig);
     if (req_id ) {
-      showRequirementCard(req_id)
+      showRequirementCard(req_id, 'view')
     }
   } else {
     document.getElementById('logout-btn').style.display = 'none';
@@ -118,10 +239,6 @@ function ready(){
   }
 };
 document.addEventListener('DOMContentLoaded', ready);
-
-function createRequirement(){
-  alert(localStorage.getItem('user'));
-}
 
 function loadComment(data) {
   if (data) {
@@ -259,7 +376,7 @@ function renderFilteredData(data) {
     tr.setAttribute('data-id', data[i].Id)
     tr.onclick = (e) => {
       var parent = e.target.href ? e.target.parentElement.parentElement : e.target.parentElement;      
-      showRequirementCard(parent.getAttribute('data-id')); 
+      showRequirementCard(parent.getAttribute('data-id'), 'view'); 
     };
     tr.innerHTML = `
       <td class="center-align modal-trigger"><a href="localhost:3000/${data[i].Id}">${data[i].Id}</a></td>
@@ -286,4 +403,34 @@ function renderFilteredData(data) {
         setTimeout(loop, 40);
     }
   })();
+}
+
+function loadDictionaries() {
+  $.get('/api/getDictionaries', (data) => {
+    console.log(data);
+    reqGroups = data.groups.recordset;
+    reqTypes = data.types.recordset; 
+    reqStatuses = data.statuses.recordset;
+  });
+}
+
+function drawDropdowns() {
+  drawDropdown('#status-select', reqStatuses);
+  drawDropdown('#group-select', reqGroups);
+  drawDropdown('#type-select', reqTypes);  
+  $('select').material_select();
+
+  dropdownsWereDrawn = true;
+}
+
+function drawDropdown(selector, data) {
+  var elem = $(selector)
+  for (var i = 0; i < data.length; i++) {
+    elem.append(`<option value="${data[i].Id}">${data[i].Value}</option>`);
+  }
+}
+
+function hideOrShowReqCreateButton() {
+  var btn = $('#create-btn');
+  isAdmin ? btn.show() : btn.hide();
 }
