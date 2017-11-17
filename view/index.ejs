@@ -97,7 +97,19 @@
                 </select>
               </div>
             </div>
-            
+
+            <div class="row">
+              <div class="label">
+                <label>Is Reviewed</label>
+              </div>
+              <div class="value view-field">
+                <span id="req_isreviewed"></span>
+              </div>
+              <div class="edit-field">
+                <input id="isreviewed-checkbox" type="checkbox"><label for="isreviewed-checkbox"></label>
+              </div>
+            </div>
+
             <div class="row edit-row">
               <div class="label">
                 <label>CR Link</label>
@@ -106,7 +118,7 @@
                 <input type="text" id="req_crLink_edit" />
               </div>
             </div>
-            
+
             <div class="row edit-row">
               <div class="label">
                 <label>Authors</label>
@@ -115,7 +127,7 @@
                 <input type="text" id="req_authors_edit" />
               </div>
             </div>
-            
+
             <div class="row edit-row">
                 <div class="label">
                   <label>Req. date</label>
@@ -159,7 +171,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="row edit-row">
               <div class="label">
                 <label>Type</label>
@@ -170,7 +182,7 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="row">
               <div class="label">
                 <label>Source</label>
@@ -213,10 +225,10 @@
         </div>
 
         <div class="general-wrapper" id="attachment-tab">
-          <form ref='upload-form' 
-            id='upload-form' 
-            action='api/addAttachment' 
-            method='post' 
+          <form ref='upload-form'
+            id='upload-form'
+            action='api/addAttachment'
+            method='post'
             encType="multipart/form-data">
               <input type="file" name="sampleFile" />
               <input type='submit' class="btn-flat" value='Upload!' />
@@ -271,6 +283,10 @@
                 <div>Status</div>
                 <div><input id="filter-status" onkeyup="filterKeyUp()"/></div>
               </th>
+              <th class="backlog_amount center-align">
+                <div>Reviewed</div>
+                <div><input id="filter-isreviewed" onkeyup="filterKeyUp()"/></div>
+              </th>
               <th class="backlog_10 center-align">
                 <div>Authors</div>
                 <div><input id="filter-authors" onkeyup="filterKeyUp()"/></div>
@@ -278,10 +294,6 @@
               <th class="backlog_10 center-align">
                 <div>CR Link</div>
                 <div><input id="filter-cr-link" onkeyup="filterKeyUp()"/></div>
-              </th>
-              <th class="backlog_10 center-align">
-                <div>Source</div>
-                <div><input id="filter-source" onkeyup="filterKeyUp()"/></div>
               </th>
             </tr>
           </thead>
@@ -296,9 +308,9 @@
                 <td class="center-align"><%= backlog.recordset[i].BE_Estimate %></td>
                 <td class="center-align"><%= backlog.recordset[i].FE_Estimate %></td>
                 <td class="center-align"><%= backlog.recordset[i].Status  %></td>
+                <td><%= backlog.recordset[i].IsReviewed  %></td>
                 <td><%= backlog.recordset[i].Authors  %></td>
                 <td><a href="<%= backlog.recordset[i].ChangeRequestLink  %>" target="_blank"><%= backlog.recordset[i].ChangeRequestLink  %></a> </td>
-                <td><%= backlog.recordset[i].Source  %></td>
               </tr>
             <% } %>
           </tbody>

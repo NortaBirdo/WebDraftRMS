@@ -69,8 +69,8 @@ app.get('/api/getDictionaries', (req, res) => {
 app.post('/api/createOrUpdateRequirement', (req, res) => {
   const pool = new sql.ConnectionPool(config, err=> {
     var request = new sql.Request(pool);
-    console.log(req.body);
-    var query = req.body.id ? 
+    //console.log(req.body);
+    var query = req.body.id ?
       `update dbo.Requirement set
       [TypeId] = ${req.body.typeId}
       ,[Priority] = ${req.body.priority}
@@ -84,6 +84,7 @@ app.post('/api/createOrUpdateRequirement', (req, res) => {
       ,[RawDataPlant] = '${req.body.text}'
       ,[BE_Estimate] = ${req.body.be ? req.body.be : null}
       ,[FE_Estimate] = ${req.body.fe ? req.body.fe : null}
+      ,[IsReviewed] = ${req.body.isreviewed}
       where id = ${req.body.id}` :
 
       `insert into Requirement ([TypeId]
@@ -97,7 +98,8 @@ app.post('/api/createOrUpdateRequirement', (req, res) => {
       ,[Source]
       ,[RawDataPlant]
       ,[BE_Estimate]
-      ,[FE_Estimate])
+      ,[FE_Estimate]
+      ,[IsReviewed])
       values (
         ${req.body.typeId}
         ,${req.body.priority}
@@ -111,6 +113,7 @@ app.post('/api/createOrUpdateRequirement', (req, res) => {
         ,'${req.body.text}'
         ,${req.body.be ? req.body.be : null}
         ,${req.body.fe ? req.body.fe : null}
+        ,${req.body.isreviewed}
       )`;
 
     console.log(query);
@@ -187,7 +190,7 @@ app.post('/api/getAttachments', (req, res)=>{
       ,Path
       ,Timestamp
     from dbo.Attachment
-    where RequirementId = ${req.body.req_id} 
+    where RequirementId = ${req.body.req_id}
     order by Timestamp DESC`;
 
   const pool = new sql.ConnectionPool(config, err => {
@@ -223,11 +226,11 @@ app.post('/api/addAttachment', function(req,res) {
     request.query(queryInsert, function(err, recordset){
       if (err) console.log(err);
     })
-    
+
     sampleFile.mv(localPathToFile, function(err) {
       if (err)
         return res.status(500).send(err);
-  
+
       return res.status(200).redirect('/' + reqId);
     });
   })

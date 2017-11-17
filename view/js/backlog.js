@@ -51,7 +51,7 @@ function showRequirementCard(id, state) {
 
   if (!dropdownsWereDrawn) drawDropdowns();
 
-  changeReqCardState(state);  
+  changeReqCardState(state);
 
   document.getElementById('requirement-card').style.display = 'block';
 
@@ -62,7 +62,7 @@ function showRequirementCard(id, state) {
       //https://stackoverflow.com/questions/3338642/updating-address-bar-with-new-url-without-hash-or-reloading-the-page
       window.history.pushState("object or string", "Title", "/"+id);
 
-      document.getElementById('req_text').innerHTML = 
+      document.getElementById('req_text').innerHTML =
         document.getElementById('req_text_edit').innerHTML = data.recordset[0].RawDataPlant;
       document.getElementById('req_group').innerHTML = data.recordset[0].Group;
       document.getElementById('req_author').innerHTML = data.recordset[0].Authors;
@@ -73,15 +73,17 @@ function showRequirementCard(id, state) {
       } else {
         document.getElementById('req_eliciataion').innerHTML = 'N/A'
       }
-      document.getElementById('req_prior').innerHTML = 
+      document.getElementById('req_prior').innerHTML =
         document.getElementById('req_prior_edit').value = data.recordset[0].Priority;
+      document.getElementById('req_isreviewed').innerHTML = data.recordset[0].IsReviewed;
+      $('#isreviewed-checkbox').prop('checked', data.recordset[0].IsReviewed == 'no' ? false : true)
       document.getElementById('req_status').innerHTML = data.recordset[0].Status;
       $('#status-select').val(data.recordset[0].StatusId);
       $('#group-select').val(data.recordset[0].GroupId);
       $('#type-select').val(data.recordset[0].TypeId);
-      document.getElementById('req_BE').innerHTML = 
+      document.getElementById('req_BE').innerHTML =
         document.getElementById('req_BE_edit').value = data.recordset[0].BE_Estimate;
-      document.getElementById('req_FE').innerHTML = 
+      document.getElementById('req_FE').innerHTML =
         document.getElementById('req_FE_edit').value = data.recordset[0].FE_Estimate;
       if (data.recordset[0].ChangeRequestLink) {
         document.getElementById('req_CR').setAttribute("href", data.recordset[0].ChangeRequestLink);
@@ -90,9 +92,9 @@ function showRequirementCard(id, state) {
         document.getElementById('req_CR').style.display = 'none';
       };
       document.getElementById('req_crLink_edit').value = data.recordset[0].ChangeRequestLink;
-      document.getElementById('req_sorce').innerHTML = 
+      document.getElementById('req_sorce').innerHTML =
         document.getElementById('req_source_edit').value = data.recordset[0].Source;
-      document.getElementById('req_notes').innerHTML = 
+      document.getElementById('req_notes').innerHTML =
         document.getElementById('req_notes_edit').innerHTML = data.recordset[0].Comment;
 
       $('select').material_select();
@@ -117,7 +119,7 @@ function showRequirementCard(id, state) {
     document.getElementById('req_FE_edit').value = '';
     document.getElementById('req_date_edit').value = '';
     document.getElementById('req_CR').setAttribute("href", '');
-    
+
     document.getElementById('req_source_edit').value = '';
     document.getElementById('req_notes_edit').innerHTML = '';
     document.getElementById('req_crLink_edit').value = '';
@@ -142,14 +144,15 @@ function saveRequirement() {
     )) {
       alert('Please set Group, Type, Req. text, Priority, Status and Authors');
       return;
-    } 
-  
+    }
+
   $.post('/api/createOrUpdateRequirement', {
     id: document.getElementById('req_id').innerHTML,
     groupId: $('#group-select').val(),
     typeId: $('#type-select').val(),
     text: $('#req_text_edit').val(),
     priority: document.getElementById('req_prior_edit').value,
+    isreviewed: document.getElementById('isreviewed-checkbox').checked ? 1 : 0,
     be: document.getElementById('req_BE_edit').value,
     fe: document.getElementById('req_FE_edit').value,
     statusId: $('#status-select').val(),
@@ -243,7 +246,7 @@ document.addEventListener('DOMContentLoaded', ready);
 function loadComment(data) {
   if (data) {
     var feed  = document.getElementById('feed');
-    
+
     while(feed.childNodes[0]){
      feed.removeChild(feed.childNodes[0]);
     }
@@ -273,7 +276,7 @@ function loadAttachments(data) {
       list.removeChild(list.childNodes[0]);
     }
 
-  if (!data) return;  
+  if (!data) return;
 
   for (var i = 0; i < data.recordset.length; i++) {
     var attachment = document.createElement('li');
@@ -316,7 +319,7 @@ function filterKeyUp() {
   if(timer) {
       clearTimeout(timer);
   }
-  
+
   timer = setTimeout(filterData, 700);
 }
 
@@ -331,7 +334,7 @@ function constructQuery() {
   var status = document.getElementById('filter-status').value;
   var authors = document.getElementById('filter-authors').value;
   var crLink = document.getElementById('filter-cr-link').value;
-  var source = document.getElementById('filter-source').value;
+  var isreviewed = document.getElementById('filter-isreviewed').value;
 
   var query = 'select * from backlog where 1=1';
   if (id) query += ' and id = ' + id;
@@ -344,7 +347,7 @@ function constructQuery() {
   if (status) query += ` and [status] like '%${status}%'`;
   if (authors) query += ` and [authors] like '%${authors}%'`;
   if (crLink) query += ` and [ChangeRequestLink] like '%${crLink}%'`;
-  if (source) query += ` and [source] like '%${source}%'`;
+  if (isreviewed) query += ` and [IsReviewed] like '%${isreviewed}%'`;
 
   query += ' order by priority DESC';
 
@@ -375,8 +378,8 @@ function renderFilteredData(data) {
     tr.className = 'tr-hided';
     tr.setAttribute('data-id', data[i].Id)
     tr.onclick = (e) => {
-      var parent = e.target.href ? e.target.parentElement.parentElement : e.target.parentElement;      
-      showRequirementCard(parent.getAttribute('data-id'), 'view'); 
+      var parent = e.target.href ? e.target.parentElement.parentElement : e.target.parentElement;
+      showRequirementCard(parent.getAttribute('data-id'), 'view');
     };
     tr.innerHTML = `
       <td class="center-align modal-trigger"><a href="localhost:3000/${data[i].Id}">${data[i].Id}</a></td>
@@ -387,9 +390,9 @@ function renderFilteredData(data) {
       <td class="center-align">${data[i].BE_Estimate ? data[i].BE_Estimate : ''}</td>
       <td class="center-align">${data[i].FE_Estimate ? data[i].FE_Estimate : ''}</td>
       <td class="center-align">${data[i].Status}</td>
+      <td>${data[i].IsReviewed}</td>
       <td>${data[i].Authors}</td>
       <td><a href="${data[i].ChangeRequestLink ? data[i].ChangeRequestLink : '#'}" target="_blank">${data[i].ChangeRequestLink ? data[i].ChangeRequestLink : ''}</a> </td>
-      <td>${data[i].Source ? data[i].Source : ''}</td>
     `;
 
     tbody.appendChild(tr);
@@ -409,7 +412,7 @@ function loadDictionaries() {
   $.get('/api/getDictionaries', (data) => {
     console.log(data);
     reqGroups = data.groups.recordset;
-    reqTypes = data.types.recordset; 
+    reqTypes = data.types.recordset;
     reqStatuses = data.statuses.recordset;
   });
 }
@@ -417,14 +420,14 @@ function loadDictionaries() {
 function drawDropdowns() {
   drawDropdown('#status-select', reqStatuses);
   drawDropdown('#group-select', reqGroups);
-  drawDropdown('#type-select', reqTypes);  
+  drawDropdown('#type-select', reqTypes);
   $('select').material_select();
 
   dropdownsWereDrawn = true;
 }
 
 function drawDropdown(selector, data) {
-  var elem = $(selector)
+  var elem = $(selector);
   for (var i = 0; i < data.length; i++) {
     elem.append(`<option value="${data[i].Id}">${data[i].Value}</option>`);
   }
