@@ -1,4 +1,4 @@
-var lastState, reqGroups, reqTypes, reqStatuses, dropdownsWereDrawn, isAdmin;
+var lastState, reqGroups, reqTypes, reqStatuses, dropdownsWereDrawn, isAdmin, dictionariesWereLoaded;
 
 loadDictionaries();
 isAdmin = localStorage.getItem("user_role") === "0";
@@ -49,7 +49,7 @@ function showRequirementCard(id, state) {
     $('.show-in-create').hide();
   }
 
-  if (!dropdownsWereDrawn) drawDropdowns();
+  if (!dropdownsWereDrawn && dictionariesWereLoaded) drawDropdowns();
 
   changeReqCardState(state);
 
@@ -410,10 +410,13 @@ function renderFilteredData(data) {
 
 function loadDictionaries() {
   $.get('/api/getDictionaries', (data) => {
-    console.log(data);
     reqGroups = data.groups.recordset;
     reqTypes = data.types.recordset;
     reqStatuses = data.statuses.recordset;
+    dictionariesWereLoaded = true;
+    if (!dropdownsWereDrawn) {
+      drawDropdowns();      
+    } 
   });
 }
 
