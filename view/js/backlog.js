@@ -100,7 +100,7 @@ function showRequirementCard(id, state) {
       $.post('/api/getCommentAmount', {req_id:id}, (data)=>{
         if (data.recordset[0].commentAmount != 0) {
           document.getElementById('commentAmount').innerHTML = data.recordset[0].commentAmount;
-        };
+        } else {document.getElementById('commentAmount').innerHTML = ''}
       });
 
       $('select').material_select();
