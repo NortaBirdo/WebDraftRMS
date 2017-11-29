@@ -116,7 +116,7 @@ app.post('/api/createOrUpdateRequirement', (req, res) => {
         ,${req.body.isreviewed}
       )`;
 
-    console.log(query);
+    //console.log(query);
     request.query(query, function(err, recordset){
       if (err) console.log(err);
       res.send(recordset);
