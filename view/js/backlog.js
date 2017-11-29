@@ -97,6 +97,12 @@ function showRequirementCard(id, state) {
       document.getElementById('req_notes').innerHTML =
         document.getElementById('req_notes_edit').innerHTML = data.recordset[0].Comment;
 
+      $.post('/api/getCommentAmount', {req_id:id}, (data)=>{
+        if (data.recordset[0].commentAmount != 0) {
+          document.getElementById('commentAmount').innerHTML = data.recordset[0].commentAmount;
+        };
+      });
+
       $('select').material_select();
 
       $.post('/api/getComment', {req_id: id}, (data)=>{
@@ -415,8 +421,8 @@ function loadDictionaries() {
     reqStatuses = data.statuses.recordset;
     dictionariesWereLoaded = true;
     if (!dropdownsWereDrawn) {
-      drawDropdowns();      
-    } 
+      drawDropdowns();
+    }
   });
 }
 

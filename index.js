@@ -162,6 +162,23 @@ app.post ('/api/getComment', (req, res)=>{
   })
 })
 
+app.post('/api/getCommentAmount', (req, res)=>{
+  var getCommentRequest = `
+    select
+      count(*) as 'commentAmount'
+    from comment as c
+    where c.RequirementId = ${req.body.req_id}`;
+
+  const pool = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool);
+
+    request.query(getCommentRequest, (err, recordset)=>{
+      if (err) console.log(err);
+      res.send(recordset);
+    });
+  })
+});
+
 app.post('/api/addcomment', function(req,res) {
   const pool = new sql.ConnectionPool(config, err=> {
     var request = new sql.Request(pool);
