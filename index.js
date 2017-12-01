@@ -123,6 +123,15 @@ app.post('/api/createOrUpdateRequirement', (req, res) => {
   })
 });
 
+app.post('/api/getNewRequirementId', function(req, res) {
+  const pool = new sql.ConnectionPool(config, err => {
+    var request = new sql.Request(pool);
+    request.query(`select IDENT_CURRENT('Requirement') as 'newId'`, function (err, recordset) {
+      res.send(recordset);
+    });
+  });
+});
+
 app.post('/api/getRequirementId', function(req, res) {
   const pool1 = new sql.ConnectionPool(config, err => {
     var request = new sql.Request(pool1);

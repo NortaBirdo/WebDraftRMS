@@ -168,7 +168,14 @@ function saveRequirement() {
     crLink: document.getElementById('req_crLink_edit').value,
     date: document.getElementById('req_date_edit').value
   }, function(d){
+    $.post('/api/getNewRequirementId', function(data) {
+
+        alert('New Requirement has been created with Id: ' + data.recordset[0].newId)
+
+    });
     closeRequirementCard();
+
+
     location.reload();
   });
 }
@@ -388,7 +395,7 @@ function renderFilteredData(data) {
       showRequirementCard(parent.getAttribute('data-id'), 'view');
     };
     tr.innerHTML = `
-      <td class="center-align modal-trigger"><a href="localhost:3000/${data[i].Id}">${data[i].Id}</a></td>
+      <td class="center-align modal-trigger"><a href="http://doc.obi.dataart.com:3000/${data[i].Id}">${data[i].Id}</a></td>
       <td class="center-align">${data[i].Group}</td>
       <td class="center-align">${data[i].Type}</td>
       <td>${data[i].RawDataPlant}</td>
