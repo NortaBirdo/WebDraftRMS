@@ -69,19 +69,18 @@ app.get('/api/getDictionaries', (req, res) => {
 app.post('/api/createOrUpdateRequirement', (req, res) => {
   const pool = new sql.ConnectionPool(config, err=> {
     var request = new sql.Request(pool);
-    //console.log(req.body);
     var query = req.body.id ?
       `update dbo.Requirement set
       [TypeId] = ${req.body.typeId}
       ,[Priority] = ${req.body.priority}
       ,[StatusId] = ${req.body.statusId}
       ,[GroupId] = ${req.body.groupId}
-      ,[Comment] = '${req.body.comment}'
+      ,[Comment] = '${req.body.comment.replace(/'/g, `''`)}'
       ,[ElicitationDate] = '${req.body.date}'
-      ,[ChangeRequestLink] = '${req.body.crLink}'
-      ,[Authors] = '${req.body.authors}'
-      ,[Source] = '${req.body.source}'
-      ,[RawDataPlant] = "${req.body.text}"
+      ,[ChangeRequestLink] = '${req.body.crLink.replace(/'/g, `''`)}'
+      ,[Authors] = '${req.body.authors.replace(/'/g, `''`)}'
+      ,[Source] = '${req.body.source.replace(/'/g, `''`)}'
+      ,[RawDataPlant] = "${req.body.text.replace(/'/g, `''`)}"
       ,[BE_Estimate] = ${req.body.be ? req.body.be : null}
       ,[FE_Estimate] = ${req.body.fe ? req.body.fe : null}
       ,[IsReviewed] = ${req.body.isreviewed}
@@ -105,12 +104,12 @@ app.post('/api/createOrUpdateRequirement', (req, res) => {
         ,${req.body.priority}
         ,${req.body.statusId}
         ,${req.body.groupId}
-        ,'${req.body.comment}'
+        ,'${req.body.comment.replace(/'/g, `''`)}'
         ,'${req.body.date}'
-        ,'${req.body.crLink}'
-        ,'${req.body.authors}'
-        ,'${req.body.source}'
-        ,'${req.body.text}'
+        ,'${req.body.crLink.replace(/'/g, `''`)}'
+        ,'${req.body.authors.replace(/'/g, `''`)}'
+        ,'${req.body.source.replace(/'/g, `''`)}'
+        ,'${req.body.text.replace(/'/g, `''`)}'
         ,${req.body.be ? req.body.be : null}
         ,${req.body.fe ? req.body.fe : null}
         ,${req.body.isreviewed}
