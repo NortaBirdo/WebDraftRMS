@@ -395,7 +395,7 @@ function renderFilteredData(data) {
       showRequirementCard(parent.getAttribute('data-id'), 'view');
     };
     tr.innerHTML = `
-      <td class="center-align modal-trigger"><a href="http://doc.obi.dataart.com:3000/${data[i].Id}">${data[i].Id}</a></td>
+      <td class="center-align modal-trigger"><a href="http://draftrms-budgets.dataart.com:3000/${data[i].Id}">${data[i].Id}</a></td>
       <td class="center-align">${data[i].Group}</td>
       <td class="center-align">${data[i].Type}</td>
       <td>${data[i].RawDataPlant}</td>
