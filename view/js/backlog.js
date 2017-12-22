@@ -141,6 +141,7 @@ function showRequirementCard(id, state) {
 };
 
 function saveRequirement() {
+
   if (!($('#group-select').val() &&
       $('#type-select').val() &&
       $('#req_text_edit').val() &&
@@ -152,29 +153,29 @@ function saveRequirement() {
       return;
     }
 
-  $.post('/api/createOrUpdateRequirement', {
-    id: document.getElementById('req_id').innerHTML,
-    groupId: $('#group-select').val(),
-    typeId: $('#type-select').val(),
-    text: $('#req_text_edit').val(),
-    priority: document.getElementById('req_prior_edit').value,
-    isreviewed: document.getElementById('isreviewed-checkbox').checked ? 1 : 0,
-    be: document.getElementById('req_BE_edit').value,
-    fe: document.getElementById('req_FE_edit').value,
-    statusId: $('#status-select').val(),
-    authors: document.getElementById('req_authors_edit').value,
-    comment: $('#req_notes_edit').val(),
-    source: document.getElementById('req_source_edit').value,
-    crLink: document.getElementById('req_crLink_edit').value,
-    date: document.getElementById('req_date_edit').value
+    $.post('/api/createOrUpdateRequirement', {
+      id: document.getElementById('req_id').innerHTML,
+      groupId: $('#group-select').val(),
+      typeId: $('#type-select').val(),
+      text: $('#req_text_edit').val(),
+      priority: document.getElementById('req_prior_edit').value,
+      isreviewed: document.getElementById('isreviewed-checkbox').checked ? 1 : 0,
+      be: document.getElementById('req_BE_edit').value,
+      fe: document.getElementById('req_FE_edit').value,
+      statusId: $('#status-select').val(),
+      authors: document.getElementById('req_authors_edit').value,
+      comment: $('#req_notes_edit').val(),
+      source: document.getElementById('req_source_edit').value,
+      crLink: document.getElementById('req_crLink_edit').value,
+      date: document.getElementById('req_date_edit').value
   }, function(d){
-    $.post('/api/getNewRequirementId', function(data) {
+    if (!document.getElementById('req_id').innerHTML) {
+      $.post('/api/getNewRequirementId', function(data) {
+          alert('New Requirement has been created with Id: ' + data.recordset[0].newId)
+      });
+    }
 
-        alert('New Requirement has been created with Id: ' + data.recordset[0].newId)
-
-    });
     closeRequirementCard();
-
 
     location.reload();
   });
