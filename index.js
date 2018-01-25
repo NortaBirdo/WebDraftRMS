@@ -23,7 +23,7 @@ app.use(fileUpload());
 function getBacklog(req, res) {
   const pool = new sql.ConnectionPool(config, err => {
     var request = new sql.Request(pool);
-    request.query('select * from backlog order by priority DESC', function (err, recordset) {
+    request.query("select * from backlog where [Status] != 'Archived' order by priority DESC", function (err, recordset) {
       res.render(path.join(__dirname+'/view/index.ejs'), {backlog: recordset});
     });
   });

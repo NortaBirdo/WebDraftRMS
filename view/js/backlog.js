@@ -363,7 +363,7 @@ function constructQuery() {
   if (crLink) query += ` and [ChangeRequestLink] like '%${crLink}%'`;
   if (isreviewed) query += ` and [IsReviewed] like '%${isreviewed}%'`;
 
-  query += ' order by priority DESC';
+  query += ` and [Status] != 'Archived' order by priority DESC`;
 
   return query;
 }
