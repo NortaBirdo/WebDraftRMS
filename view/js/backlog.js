@@ -67,7 +67,9 @@ function showRequirementCard(id, state) {
       document.getElementById('req_group').innerHTML = data.recordset[0].Group;
       document.getElementById('req_author').innerHTML = data.recordset[0].Authors;
       document.getElementById('req_authors_edit').value = data.recordset[0].Authors;
-      if (data.recordset[0].ElicitationDate) {
+      console.log(data.recordset[0].ElicitationDate);
+      if (data.recordset[0].ElicitationDate != '1900-01-01T00:00:00.000Z') {
+
         document.getElementById('req_eliciataion').innerHTML = dateFormatting(data.recordset[0].ElicitationDate);
         $('#req_date_edit').val(formatDateForInput(data.recordset[0].ElicitationDate));
       } else {
