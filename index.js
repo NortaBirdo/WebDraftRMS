@@ -53,7 +53,7 @@ app.get('/api/getDictionaries', (req, res) => {
     var request = new sql.Request(pool);
     var result = {};
 
-    request.query('select Id, Caption as Value from dbo.ReqGroup order by Caption').then(groups => {
+    request.query('select Id, Caption as Value from dbo.ReqGroup where isArchived = 0 order by Caption').then(groups => {
       result.groups = groups;
       return request.query('select Id, Caption as Value from dbo.RequirementType');
     }).then(types => {
